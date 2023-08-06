@@ -1,1 +1,1 @@
-TRUNCATE TABLE post_likes CASCADE;
+TRUNCATE TABLE snlike.post_likes CASCADE;

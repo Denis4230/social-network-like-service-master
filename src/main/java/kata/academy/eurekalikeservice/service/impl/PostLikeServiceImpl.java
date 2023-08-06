@@ -3,6 +3,7 @@ package kata.academy.eurekalikeservice.service.impl;
 import kata.academy.eurekalikeservice.model.entity.PostLike;
 import kata.academy.eurekalikeservice.repository.PostLikeRepository;
 import kata.academy.eurekalikeservice.service.PostLikeService;
+import kata.academy.eurekalikeservice.util.ApiValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -11,8 +12,11 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = "post-like-count")
@@ -81,5 +85,20 @@ public class PostLikeServiceImpl implements PostLikeService {
     @Override
     public Optional<PostLike> findByIdAndPostIdAndUserId(Long postLikeId, Long postId, Long userId) {
         return postLikeRepository.findByIdAndPostIdAndUserId(postLikeId, postId, userId);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Map<Long, Long> getSomePostLikeCount(List<Long> postIds) {
+        Map<Long, Long> mapIdPostAnpCountLike = new HashMap<>();
+
+        List<PostLike> postLikes = postLikeRepository.findSomePostLikeCount(postIds);
+
+        for (PostLike postLike : postLikes) {
+            mapIdPostAnpCountLike.merge(postLike.getPostId(), 1L, Long::sum);
+        }
+
+        postIds.forEach(postId -> mapIdPostAnpCountLike.putIfAbsent(postId, 0L));
+        return mapIdPostAnpCountLike;
     }
 }

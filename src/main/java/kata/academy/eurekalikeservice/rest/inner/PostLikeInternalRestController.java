@@ -1,5 +1,6 @@
 package kata.academy.eurekalikeservice.rest.inner;
 
+import kata.academy.eurekalikeservice.api.Response;
 import kata.academy.eurekalikeservice.service.PostLikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.Positive;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Validated
@@ -32,4 +34,10 @@ public class PostLikeInternalRestController {
     public ResponseEntity<List<Long>> getTopPostIdsByCount(@RequestParam(defaultValue = "100") @Positive Integer count) {
         return ResponseEntity.ok(postLikeService.getTopPostIdsByCount(count));
     }
+    @GetMapping("/likes/count")
+    public Response<Map<Long, Long>> getSomePostLikeCount(@RequestParam List<Long> postId) {
+        Map<Long, Long> mapIdPostAnpCountLike = postLikeService.getSomePostLikeCount(postId);
+        return Response.ok(mapIdPostAnpCountLike);
+    }
+
 }
