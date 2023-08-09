@@ -3,6 +3,7 @@ package kata.academy.eurekalikeservice.service;
 import kata.academy.eurekalikeservice.model.entity.PostLike;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface PostLikeService {
@@ -24,4 +25,5 @@ public interface PostLikeService {
     int countByPostIdAndPositive(Long postId, Boolean positive);
 
     Optional<PostLike> findByIdAndPostIdAndUserId(Long postLikeId, Long postId, Long userId);
+    Map<Long, Long> getSomePostLikeCount(List<Long> postId);
 }

@@ -13,8 +13,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -77,5 +81,20 @@ public class PostLikeRestControllerIT extends SpringSimpleContextTest {
                         String.format("Реакция на пост с postId %d пользователя с userId %d уже была добавлена",
                                 postId, userId)
                 )));
+    }
+
+    @Test
+    @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, value = "/scripts/outer/PostLikeRestController/addPostLike_PostLikeExistsTest/Before.sql")
+    @Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, value = "/scripts/outer/PostLikeRestController/addPostLike_PostLikeExistsTest/After.sql")
+    public void getSomePostLikeCount() throws Exception {
+        mockMvc.perform(get("/api/internal/v1/posts/likes/count")
+                        .param("postId", "1,2")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.success", Is.is(true)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.code", Is.is(200)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.1", Is.is(2)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.2", Is.is(0)));
+
     }
 }

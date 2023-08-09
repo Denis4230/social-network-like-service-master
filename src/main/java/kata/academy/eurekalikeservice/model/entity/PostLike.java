@@ -19,7 +19,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @Entity
-@Table(name = "post_likes")
+@Table(name = "post_likes", schema = "snlike")
 public class PostLike {
 
     @Id
